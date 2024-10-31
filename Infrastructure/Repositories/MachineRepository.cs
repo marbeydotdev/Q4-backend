@@ -14,7 +14,7 @@ public class MachineRepository
 
     public async Task<Object> GetAllAsync()
     {
-        var machines = await _connection.QueryAsync("SELECT id, board, port, name FROM machine_monitoring_poorten");
+        var machines = await _connection.QueryAsync("SELECT id, board, port, name, visible FROM machine_monitoring_poorten");
         return machines;
     }
 

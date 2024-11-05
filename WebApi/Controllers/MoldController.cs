@@ -15,9 +15,19 @@ public class MoldController : ControllerBase
     }
 
     [HttpGet("history")]
-    public async Task<IActionResult> GetHistory(int skip = 0, int limit = 10)
+    public async Task<IActionResult> GetHistory(int? moldId, int skip = 0, int limit = 10)
     {
-        var results = await _moldRepository.GetMoldHistoryAsync(skip, limit);
+        object results;
+        if (moldId.HasValue)
+        {
+            Console.WriteLine(moldId.Value);
+            results = await _moldRepository.GetMoldHistoryAsync(skip, limit, moldId.Value);
+        }
+        else
+        {
+            results = await _moldRepository.GetMoldHistoryAsync(skip, limit);
+        }
+        
         return Ok(results); 
     }
 }

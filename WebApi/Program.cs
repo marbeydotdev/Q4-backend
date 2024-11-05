@@ -1,4 +1,7 @@
+using dotenv.net;
 using Infrastructure;
+
+DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

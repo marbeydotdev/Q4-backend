@@ -12,5 +12,6 @@ public static class DependencyInjection
         services.AddTransient<IDbConnection>(db => new MySqlConnection(
             Environment.GetEnvironmentVariable("CONNECTION_STRING")));
         services.AddScoped<MachineRepository>();
+        services.AddScoped<MoldRepository>();
     }
 }

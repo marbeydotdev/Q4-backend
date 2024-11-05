@@ -30,4 +30,11 @@ public class MoldController : ControllerBase
         
         return Ok(results); 
     }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> GetList(int skip = 0, int limit = 10)
+    {
+        var results = await _moldRepository.GetMolds(skip, limit);
+        return Ok(results);
+    }
 }

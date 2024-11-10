@@ -10,21 +10,21 @@ public class MachineController : ControllerBase
     private readonly MachineRepository _machineRepository;
 
     public MachineController(MachineRepository machineRepository)
-    { 
+    {
         _machineRepository = machineRepository;
     }
 
     [HttpGet("list")]
-    public async Task<IActionResult> ListMachines()
+    public async Task<IActionResult> ListMachines(string search = "", int skip = 0, int limit = 10)
     {
-        var machines = await _machineRepository.GetAllAsync();
+        var machines = await _machineRepository.GetAllAsync(skip, limit);
         return Ok(machines);
     }
 
-    [HttpGet("shot_history")]
-    public async Task<IActionResult> GetMachineShotHistory(int board, int port, int skip = 0, int limit = 10)
+    [HttpGet("shots")]
+    public async Task<IActionResult> GetMachineShotHistory(int machineId, DateTime from, DateTime to)
     {
-        var shotHistory = await _machineRepository.GetMachineShotHistoryAsync(board, port, skip, limit);
+        var shotHistory = await _machineRepository.GetMachineShotHistoryAsync(machineId, from, to);
         return Ok(shotHistory);
     }
 }

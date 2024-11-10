@@ -27,12 +27,12 @@ public class MoldController : ControllerBase
         {
             results = await _moldRepository.GetMoldHistoryAsync(skip, limit);
         }
-        
-        return Ok(results); 
+
+        return Ok(results);
     }
 
     [HttpGet("list")]
-    public async Task<IActionResult> GetList(int skip = 0, int limit = 10)
+    public async Task<IActionResult> GetList(string? search, int skip = 0, int limit = 10)
     {
         var results = await _moldRepository.GetMolds(skip, limit);
         return Ok(results);

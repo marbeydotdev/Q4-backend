@@ -1,4 +1,6 @@
 using System.Data;
+using Common;
+using Common.Models;
 using Dapper;
 
 namespace Infrastructure.Repositories;
@@ -42,8 +44,36 @@ public class MoldRepository
             m.description,
             m.board,
             m.port,
-            health = Random.Shared.Next(0, 100),
+            health = -1,
             machine = new { id = m.current_machine_id, name = m.current_machine_name }
         });
+    }
+
+    public async Task<List<Shot>> GetMoldShotHistory(int moldId, DateTime lastMaintenance)
+    {
+        var result = await _connection.QueryAsync<Shot>(
+            "SELECT md.shot_time as Duration, md.timestamp as Timestamp FROM monitoring_data_202009 md LEFT JOIN production_data pd ON pd.treeview_id = @moldId WHERE timestamp > @lastMaintenance LIMIT 0,50",
+            new { moldId, lastMaintenance });
+        return result.ToList();
+    }
+
+    public async Task<double> GetMoldHealth(int moldId, DateTime lastMaintenance)
+    {
+        var shots = await GetMoldShotHistory(moldId, lastMaintenance);
+
+        var tolerance = 0.1;
+        var median = Utils.GetMedian(shots.Select(s => s.Duration).ToArray());
+
+        double health = 100;
+
+        foreach (var shot in shots)
+        {
+            if (Math.Abs(median - shot.Duration) > tolerance)
+            {
+                health -= 1;
+            }
+        }
+
+        return health;
     }
 }

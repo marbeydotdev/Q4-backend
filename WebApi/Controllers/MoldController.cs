@@ -37,4 +37,18 @@ public class MoldController : ControllerBase
         var results = await _moldRepository.GetMolds(skip, limit);
         return Ok(results);
     }
+
+    [HttpGet("shothistory")]
+    public async Task<IActionResult> GetHistory(int moldId, DateTime lastMaintenance)
+    {
+        var shots = await _moldRepository.GetMoldShotHistory(moldId, lastMaintenance);
+        return Ok(shots);
+    }
+
+    [HttpGet("health")]
+    public async Task<IActionResult> GetHealth(int moldId, DateTime lastMaintenance)
+    {
+        var health = await _moldRepository.GetMoldHealth(moldId, lastMaintenance);
+        return Ok(new { health });
+    }
 }

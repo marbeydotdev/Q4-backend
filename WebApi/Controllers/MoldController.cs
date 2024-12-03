@@ -38,6 +38,17 @@ public class MoldController : ControllerBase
         return Ok(results);
     }
 
+    [HttpGet("{moldId}")]
+    public async Task<IActionResult> GetMoldById(int moldId)
+    {
+        var mold = await _moldRepository.GetMoldById(moldId);
+        if (mold == null)
+        {
+            return NotFound();
+        }
+        return Ok(mold);
+    }
+
     [HttpGet("shothistory")]
     public async Task<IActionResult> GetHistory(int moldId, DateTime lastMaintenance)
     {

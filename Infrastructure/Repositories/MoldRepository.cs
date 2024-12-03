@@ -48,6 +48,14 @@ public class MoldRepository
             machine = new { id = m.current_machine_id, name = m.current_machine_name }
         });
     }
+    
+    public async Task<object> GetMoldById(int moldId)
+    {
+        var mold = await _connection.QueryFirstOrDefaultAsync(
+            "SELECT DISTINCT t.naam         as name, p.board, p.port,                t.omschrijving as description,                 p.treeview_id  as id,                 m.id           as current_machine_id,                 m.name         as current_machine_name FROM production_data p          LEFT JOIN treeview t ON p.treeview_id = t.id          LEFT JOIN (SELECT port, board, MAX(id) as latest_machine_id                     FROM machine_monitoring_poorten                     WHERE visible = 1                     GROUP BY port, board) lm ON lm.port = p.port AND lm.board = p.board          LEFT JOIN machine_monitoring_poorten m ON m.id = lm.latest_machine_id WHERE p.treeview_id = @moldId   UNION ALL  SELECT DISTINCT p.board, p.port, t.naam,                 t.omschrijving,                 p.treeview2_id as id,                 m.id           as current_machine_id,                 m.name         as current_machine_name FROM production_data p          LEFT JOIN treeview t ON p.treeview2_id = t.id          LEFT JOIN (SELECT port, board, MAX(id) as latest_machine_id                     FROM machine_monitoring_poorten                     WHERE visible = 1                       AND id != 1                       AND id != 154                       AND id != 161                       AND id != 166                     GROUP BY port, board) lm ON lm.port = p.port AND lm.board = p.board          LEFT JOIN machine_monitoring_poorten m ON m.id = lm.latest_machine_id WHERE p.treeview_id = @moldId",
+            new { moldId });
+        return mold;
+    }
 
     public async Task<List<Shot>> GetMoldShotHistory(int moldId, DateTime lastMaintenance)
     {

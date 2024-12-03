@@ -41,7 +41,7 @@ public class MoldController : ControllerBase
     [HttpGet("{moldId}")]
     public async Task<IActionResult> GetMoldById(int moldId)
     {
-        var mold = await _moldRepository.GetMoldById(moldId);
+        var mold = await _moldRepository.GetMoldByIdAsync(moldId);
         if (mold == null)
         {
             return NotFound();

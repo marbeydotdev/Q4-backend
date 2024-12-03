@@ -104,11 +104,10 @@ public async Task<object> GetMoldHistoryAsync(int skip, int limit, int moldId)
         return result.ToList();
     }
 
-    public async Task<double> GetMoldHealth(int moldId, DateTime lastMaintenance)
+    public async Task<double> GetMoldHealth(int moldId, DateTime lastMaintenance, double tolerance)
     {
         var shots = await GetMoldShotHistory(moldId, lastMaintenance);
 
-        var tolerance = 0.1;
         var median = Utils.GetMedian(shots.Select(s => s.Duration).ToArray());
 
         double health = 100;

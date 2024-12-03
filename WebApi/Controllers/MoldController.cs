@@ -14,7 +14,7 @@ public class MoldController : ControllerBase
         _moldRepository = moldRepository;
     }
 
-    [HttpGet("history")]
+    [HttpGet("{moldId}/history")]
     public async Task<IActionResult> GetHistory(int? moldId, int skip = 0, int limit = 10)
     {
         object results;

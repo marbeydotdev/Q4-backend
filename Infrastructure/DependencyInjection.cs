@@ -13,5 +13,6 @@ public static class DependencyInjection
             Environment.GetEnvironmentVariable("CONNECTION_STRING")));
         services.AddScoped<MachineRepository>();
         services.AddScoped<MoldRepository>();
+        services.AddScoped<MaintenanceRepository>();
     }
 }

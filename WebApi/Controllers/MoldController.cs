@@ -56,7 +56,7 @@ public class MoldController : ControllerBase
         return Ok(shots);
     }
 
-    [HttpGet("health")]
+    [HttpGet("{moldId}/health")]
     public async Task<IActionResult> GetHealth(int moldId, DateTime lastMaintenance, double tolerance = 0.5)
     {
         var health = await _moldRepository.GetMoldHealth(moldId, lastMaintenance, tolerance);

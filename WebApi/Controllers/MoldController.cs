@@ -34,7 +34,7 @@ public class MoldController : ControllerBase
     [HttpGet("")]
     public async Task<IActionResult> GetList(string? search, int skip = 0, int limit = 10)
     {
-        var results = await _moldRepository.GetMolds(search, skip, limit);
+        var results = await _moldRepository.GetMolds(skip, limit);
         return Ok(results);
     }
 

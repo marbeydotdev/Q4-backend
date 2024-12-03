@@ -14,23 +14,61 @@ public class MoldRepository
         _connection = connection;
     }
 
-    public async Task<object> GetMoldHistoryAsync(int skip, int limit)
-    {
-        var moldHistory = await _connection.QueryAsync(
-            "SELECT timestamp(start_date, start_time) as start, timestamp(end_date, end_time) as end, treeview_id as mold_1_id, treeview2_id as mold_2_id, t1.naam as mold_1_name, t1.omschrijving as mold_1_description, t2.naam as mold_2_name, t2.omschrijving as mold_2_description FROM production_data LEFT JOIN treeview t1 ON t1.id = production_data.treeview_id LEFT JOIN treeview t2 ON t2.id = treeview2_id LIMIT @skip,@limit",
-            new { skip, limit });
+public async Task<object> GetMoldHistoryAsync(int skip, int limit)
+{
+    var moldHistory = await _connection.QueryAsync(
+        "SELECT timestamp(start_date, start_time) as start, timestamp(end_date, end_time) as end, treeview_id as mold_1_id, treeview2_id as mold_2_id, t1.naam as mold_1_name, t1.omschrijving as mold_1_description, t2.naam as mold_2_name, t2.omschrijving as mold_2_description FROM production_data LEFT JOIN treeview t1 ON t1.id = production_data.treeview_id LEFT JOIN treeview t2 ON t2.id = treeview2_id LIMIT @skip,@limit",
+        new { skip, limit });
 
-        return moldHistory;
-    }
+    var groupedHistory = moldHistory.GroupBy(m => new { m.start, m.end })
+        .Select(g => new
+        {
+            start = g.Key.start,
+            end = g.Key.end,
+            durationHours = (g.Key.end - g.Key.start).TotalHours,
+            molds = g.Select(m => new
+            {
+                id = m.mold_1_id,
+                name = m.mold_1_name,
+                description = m.mold_1_description
+            }).Concat(g.Select(m => new
+            {
+                id = m.mold_2_id,
+                name = m.mold_2_name,
+                description = m.mold_2_description
+            })).Where(m => m.id != 0).Distinct().ToList()
+        });
 
-    public async Task<object> GetMoldHistoryAsync(int skip, int limit, int moldId)
-    {
-        var moldHistory = await _connection.QueryAsync(
-            "SELECT timestamp(start_date, start_time) as start, timestamp(end_date, end_time) as end, treeview_id as mold_1_id, treeview2_id as mold_2_id, t1.naam as mold_1_name, t1.omschrijving as mold_1_description, t2.naam as mold_2_name, t2.omschrijving as mold_2_description FROM production_data LEFT JOIN treeview t1 ON t1.id = production_data.treeview_id LEFT JOIN treeview t2 ON t2.id = treeview2_id WHERE t1.id = @moldId OR t2.id = @moldId LIMIT @skip,@limit",
-            new { skip, limit, moldId });
+    return groupedHistory;
+}
 
-        return moldHistory;
-    }
+public async Task<object> GetMoldHistoryAsync(int skip, int limit, int moldId)
+{
+    var moldHistory = await _connection.QueryAsync(
+        "SELECT timestamp(start_date, start_time) as start, timestamp(end_date, end_time) as end, treeview_id as mold_1_id, treeview2_id as mold_2_id, t1.naam as mold_1_name, t1.omschrijving as mold_1_description, t2.naam as mold_2_name, t2.omschrijving as mold_2_description FROM production_data LEFT JOIN treeview t1 ON t1.id = production_data.treeview_id LEFT JOIN treeview t2 ON t2.id = treeview2_id WHERE t1.id = @moldId OR t2.id = @moldId LIMIT @skip,@limit",
+        new { skip, limit, moldId });
+
+    var groupedHistory = moldHistory.GroupBy(m => new { m.start, m.end })
+        .Select(g => new
+        {
+            start = g.Key.start,
+            end = g.Key.end,
+            durationHours = (g.Key.end - g.Key.start).TotalHours,
+            molds = g.Select(m => new
+            {
+                id = m.mold_1_id,
+                name = m.mold_1_name,
+                description = m.mold_1_description
+            }).Concat(g.Select(m => new
+            {
+                id = m.mold_2_id,
+                name = m.mold_2_name,
+                description = m.mold_2_description
+            })).Where(m => m.id != 0).Distinct().ToList()
+        });
+
+    return groupedHistory;
+}
 
     public async Task<object> GetMolds(int skip, int limit)
     {
